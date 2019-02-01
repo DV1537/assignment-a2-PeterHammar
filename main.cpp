@@ -32,7 +32,7 @@ int main()
     {
         while (myReadFile >> p)
         {
-
+            // array size increases for every number that is read from file
             if (sizeOfArray <= count)
             {
                 sizeOfArray += 1;
@@ -56,7 +56,8 @@ int main()
     }
     myReadFile.close();
 
-    if (sizeOfArray == 2)
+
+    if (sizeOfArray == 2) // 1 coordinate
     {
         //Point
         Coordinates coordinates;
@@ -70,7 +71,7 @@ int main()
         printArea(&point);
         printCircumference(&point);
     }
-    else if (sizeOfArray == 4)
+    else if (sizeOfArray == 4) // 2 coordinates
     {
         //Line
         Coordinates coordinatesL1, coordinatesL2;
@@ -86,7 +87,7 @@ int main()
         printArea(&line);
         printCircumference(&line);
     }
-    else if (sizeOfArray == 6)
+    else if (sizeOfArray == 6) // 3 coordinates
     {
         //Triangle
         Coordinates coordinatesT1, coordinatesT2, coordinatesT3;
@@ -103,7 +104,7 @@ int main()
         printArea(&triangle);
         printCircumference(&triangle);
     }
-    else if (sizeOfArray > 6)
+    else if (sizeOfArray > 6) // 4+ coordinates
     {
         //Polygon
         Coordinates *arrayPoly = new Coordinates[sizeOfArray/2];

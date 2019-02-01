@@ -16,7 +16,7 @@ public:
 private:
     Coordinates coordinatesT1;
     Coordinates coordinatesT2;
-    Coordinates coordinatesT3; //amount of coordinates
+    Coordinates coordinatesT3; 
 };
 
 #endif

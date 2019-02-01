@@ -24,8 +24,15 @@ double Polygon::area()
     {
         polyArea *= -1;
     }
-
-    return polyArea/2;
+    if(!(isConvex()))
+    {
+        return -1;
+    }
+    else
+    {
+        return polyArea/2;
+    }
+    
 }
 
 double Polygon::circumference()
@@ -70,22 +77,74 @@ Polygon::Polygon(Coordinates *array, int size)
 
 bool Polygon::isConvex()
 {
-    // convex if any inner angle is greater than 180.
-    // loop over coordinates
-    // create lines:
-    // line1 = first coordinate -> second coordinate
-    // line2 = second coordinate -> third coordinate
-    // calculate scalar product(line1, line2) / (length(line1)*length(line2)) -> scalarProd
-    // angle = arccos(scalarProd)
-    // if angle > 180, stop loop and return false,
-    // otherwise continue to next pair (second->third and third->fourth ...)
-    // return true if no angle is bigger than 180
-    // ...
-    // >:(
+    // take three points
+    // create two vectors: one from point1 -> point2, one from point2 -> point3
+    // calculate rotation between the vector using cross product
+    // check sign of z-axis of cross product: 
+    // (a = [ax,ay,ax], b = [bx,by,bz] =>  a x b = [_ ,_ , ax*by - ay*bx])
+    // compare sign with previous cross product, if same OK (or if sign = 0), otherwise stop and return false
+    // redo if not all points are checked
+    // if all signs are the same (or z-axis component == 0), return true
 
-    return false;
+    bool isConvex = true;
+    int previousRotation = 0;
+    double angle = 0;
+    for(int i = 0; i < sizeOfArray; i++)
+    {
+        int ax = (arrayPoly[(i+1) % sizeOfArray].x-arrayPoly[i % sizeOfArray].x);
+        int by = (arrayPoly[(i+2) % sizeOfArray].y-arrayPoly[(i+1) % sizeOfArray].y);
+        int ay = (arrayPoly[(i+1) % sizeOfArray].y-arrayPoly[i % sizeOfArray].y);
+        int bx = (arrayPoly[(i+2) % sizeOfArray].x-arrayPoly[(i+1) % sizeOfArray].x);
+        int rotation = ax*by-ay*bx;
+        int scalar = ax*bx+ay*by;
+
+        /**
+         * Just like the dot product is proportional to the cosine of the angle, 
+         * the determinant is proprortional to its sine. 
+         * 
+         * And if you know the cosine and the sine, then you can compute the angle. 
+         * Many programming languages provide a function atan2 for this purpose, e.g.:
+         * dot = x1*x2 + y1*y2      # dot product
+         * det = x1*y2 - y1*x2      # determinant
+         * angle = atan2(det, dot)  # atan2(y, x) or atan2(sin, cos)
+        */
+        const double pi = 3.14159265;
+        angle += std::atan2(rotation, scalar) * 180.0 / pi;
+        if(angle > 400 || angle < -400)
+        {
+            isConvex = false;
+            break;
+        }
+
+        if(i == 0)
+        {
+            previousRotation = rotation;
+        }
+        else if (rotation != 0)
+        {
+            if (previousRotation != 0)
+            {
+                if (rotation < 0 && previousRotation > 0)
+                {
+                    isConvex = false;
+                    break;
+                }
+                else if (rotation > 0 && previousRotation < 0)
+                {
+                    isConvex = false;
+                    break;
+                }
+            }
+            previousRotation = rotation;
+        }
+    }
+    return isConvex;
 }
 
 double Polygon::distance(Shape *s)
 {
+    // pythagoras
+    double xDistance = s->position().x - this->position().x;
+    double yDistance = s->position().y - this->position().y;
+    return sqrt(pow(xDistance, 2.0) + pow(yDistance, 2.0));
 }
